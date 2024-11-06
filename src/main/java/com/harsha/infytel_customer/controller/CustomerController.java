@@ -20,9 +20,9 @@ public class CustomerController {
     private CustomerService customerService;
     @Autowired
     private RestTemplate restTemplate;
-    @Value("${plan.Url}")
+//    @Value("${plan.Url}")
     String planUrl;
-    @Value("${friend.Url}")
+//    @Value("${friend.Url}")
     String friendUrl;
     @Autowired
     DiscoveryClient discoveryClient;
@@ -43,16 +43,21 @@ public class CustomerController {
     public CustomerDTO getCustomerProfile(@PathVariable long phoneNo){
         System.out.println("Profile request for customer "+ phoneNo);
         CustomerDTO customerDTO = customerService.getCustomerProfile(phoneNo);
-
+        //Fetching planUrl manually using discovery client
         List<ServiceInstance> planInstance = discoveryClient.getInstances("infytel-plan");
         if(planInstance != null && !planInstance.isEmpty()){
-            planUrl = planInstance.get(0).getUri().toString();
+            planUrl = planInstance.get(0).getUri().toString();//fetches till port number
         }
-
+        //Fetching friendUrl manually using discovery client
+        List<ServiceInstance> friendInstance = discoveryClient.getInstances("infytel-friend-family");
+        if(friendInstance != null && !friendInstance.isEmpty()){
+            friendUrl = friendInstance.get(0).getUri().toString();//fetches till port number
+        }
         PlanDTO planDTO = new RestTemplate()
                 .getForObject(planUrl+"/plans/"+ customerDTO.getCurrentPlan().getPlanId(), PlanDTO.class);
         customerDTO.setCurrentPlan(planDTO);
-        List<Long> friendList = new RestTemplate().getForObject(friendUrl+phoneNo+"/friends", List.class);
+        //@GetMapping("/customers/{phoneNo}/friends")
+        List<Long> friendList = new RestTemplate().getForObject(friendUrl+"/customers/"+phoneNo+"/friends", List.class);
         customerDTO.setFriendAndFamily(friendList);
 //        if(phoneNo==100){
 //            throw new RuntimeException()
