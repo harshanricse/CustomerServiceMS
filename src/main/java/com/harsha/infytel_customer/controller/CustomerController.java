@@ -6,7 +6,6 @@ import com.harsha.infytel_customer.dto.PlanDTO;
 import com.harsha.infytel_customer.service.CustomerService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +25,8 @@ public class CustomerController {
     String friendUrl;
     @Autowired
     DiscoveryClient discoveryClient;
+    @Autowired
+    FriendFegin ff;
 
     @PostMapping(value="/customers")
     public void createCustomer(@RequestBody CustomerDTO customerDTO){
@@ -47,6 +48,7 @@ public class CustomerController {
         List<ServiceInstance> planInstance = discoveryClient.getInstances("infytel-plan");
         if(planInstance != null && !planInstance.isEmpty()){
             planUrl = planInstance.get(0).getUri().toString();//fetches till port number
+            System.out.println("Debug"+ planUrl);
         }
         //Fetching friendUrl manually using discovery client
         List<ServiceInstance> friendInstance = discoveryClient.getInstances("infytel-friend-family");
@@ -57,7 +59,8 @@ public class CustomerController {
                 .getForObject(planUrl+"/plans/"+ customerDTO.getCurrentPlan().getPlanId(), PlanDTO.class);
         customerDTO.setCurrentPlan(planDTO);
         //@GetMapping("/customers/{phoneNo}/friends")
-        List<Long> friendList = new RestTemplate().getForObject(friendUrl+"/customers/"+phoneNo+"/friends", List.class);
+//        List<Long> friendList = new RestTemplate().getForObject(friendUrl+"/customers/"+phoneNo+"/friends", List.class);
+        List<Long> friendList = ff.getFriendList(phoneNo);
         customerDTO.setFriendAndFamily(friendList);
 //        if(phoneNo==100){
 //            throw new RuntimeException()
