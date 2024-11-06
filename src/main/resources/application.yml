@@ -1,0 +1,21 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: infytel-customer
+  cloud:
+    consul:
+      config:
+        enabled: true
+        prefix: config
+        defaultContext: application
+        profileSeparator: '::'
+        format: YAML
+resilence4j.circuitbreaker:
+  instances:
+    customerService:
+    failureRateThreshold: 50
+    slidingWindowSize: 5
+    permittedNumberOfCallsInHalfOpenState: 3
+    waitDurationInOpenState: 20s
+    automaticTransitionFromOpenToHalfOpenEnabled: true
