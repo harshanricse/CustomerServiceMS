@@ -5,7 +5,6 @@ import com.harsha.infytel_customer.entity.Plan;
 import lombok.Data;
 
 import java.util.List;
-
 @Data
 public class CustomerDTO {
     private long phoneNo;

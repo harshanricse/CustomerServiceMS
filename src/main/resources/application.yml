@@ -9,15 +9,15 @@ spring:
         hostname: localhost
       config:
         enabled: true
-        prefix: config
-        defaultContext: application
-        profileSeparator: '::'
+        prefix: config # default folder where all the configuration is stored in consul
+        defaultContext: application # folder storing all the common properties
+        profileSeparator: '::' # separator for profiles in property source
         format: YAML
-resilence4j.circuitbreaker:
+resilience4j.circuitbreaker:
   instances:
     customerService:
-    failureRateThreshold: 50
-    slidingWindowSize: 5
-    permittedNumberOfCallsInHalfOpenState: 3
-    waitDurationInOpenState: 20s
-    automaticTransitionFromOpenToHalfOpenEnabled: true
+      failureRateThreshold: 50
+      slidingWindowSize: 5 # how many minimum calls should we make in closed state, also can be configured using ringBufferSizeInClosedState
+      permittedNumberOfCallsInHalfOpenState: 3 # minimum number of calls to be made in open state
+      waitDurationInOpenState: 60s # time the circuit breaker should wait before moving from open to half open state
+      automaticTransitionFromOpenToHalfOpenEnabled: true # can automatically move from open to half open state
